@@ -42,8 +42,8 @@ bool	verbose = 1;		// generate user messages
 bool	verbose = 0;		// don't generate user messages
 #endif
 
-int	pickit2mode = 0;
-int	pickit2firmware = 0;
+int	pickit_mode = 0;
+int	pickit_firmware = 0;
 int	targetPower = 0;
 
 int	pickit_interface = 0;
@@ -185,7 +185,7 @@ void showUSBCommand(byte *src, int len)
 	if (!usbFile)
 		usbFile = stdout;
 
-	if (pickit2mode == BOOTLOAD_MODE)
+    if (pickit_mode == BOOTLOAD_MODE)
 	{
 		for (i=0; i<len; i++)
 		{
@@ -200,7 +200,7 @@ void showUSBCommand(byte *src, int len)
 					break;
 
 				case CLR_UPLOAD_BFR:
-					fprintf(usbFile, "Clear Upload Buffer\n");
+                    fprintf(usbFile, "Clear Upload Buffer\n");
 					break;
 
 				case READFWFLASH:
@@ -590,16 +590,17 @@ char *CUsbhidioc::GetPK2UnitID(void)
 	return m_UnitID;
 }
 
+
+
 // Detect the PICkit2
 
 bool CUsbhidioc::FindTheHID(int unitIndex)
 {
 	if (!deviceHandle)
 		deviceHandle = usbPickitOpen(unitIndex, (char *) &m_UnitID);
-
+    m_type = deviceType;
 	if (deviceHandle)
 		return 1;
-
 	return 0;
 }
 
@@ -612,7 +613,7 @@ bool CUsbhidioc::ReadReport(char InBuffer[])
 
 	if (!deviceHandle)
 	{
-			return 0;
+        return 0;
 	}
 
 	i = recvUSB(deviceHandle, reqLen, (byte *) InBuffer);
@@ -645,7 +646,7 @@ void CUsbhidioc::CloseReport(void)
 	if (deviceHandle)
 	{
 
-		usb_release_interface(deviceHandle, pickit_interface);
+        usb_release_interface(deviceHandle, pickit_interface);
 		deviceHandle = NULL;
 		pickit_interface = 0;
 	}

@@ -1352,7 +1352,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 						else
 							ret = PicFuncs.ReadDevice(VERIFY_MEM_SHORT, program, eedata, userid, config);
 					}
-					printf("PICkit 2 Program Report\n");
+                    printf("PICkit Program Report\n");
 					printf("%s\n", stime);
 					printf("Device Type: %s\n\n", PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].PartName);
 					if (ret)
@@ -2174,22 +2174,35 @@ bool Ccmd_app::checkSwitch(_TCHAR* argv)
 
 bool Ccmd_app::findPICkit2(int unitIndex)
 {
-	unsigned char dot_min = PicFuncs.FW_DOT_MIN;
-
 	if (PicFuncs.DetectPICkit2Device(unitIndex, true))
 	{
-		if ((PicFuncs.FirmwareVersion.major >= PicFuncs.FW_MAJ_MIN)
-			&& (PicFuncs.FirmwareVersion.minor >= PicFuncs.FW_MNR_MIN)
-			&& (PicFuncs.FirmwareVersion.dot >= dot_min))
-		{
-			return true;
-		}
-		printf("PICkit 2 found with Operating System v%d.%02d.%02d\n", PicFuncs.FirmwareVersion.major, 
-									PicFuncs.FirmwareVersion.minor, PicFuncs.FirmwareVersion.dot);
-		printf("Use -D to download minimum required OS v%d.%02d.%02d or later\n", PicFuncs.FW_MAJ_MIN, 
-									PicFuncs.FW_MNR_MIN, PicFuncs.FW_DOT_MIN);
-		fflush(stdout);
-		ReturnCode = WRONG_OS;
+        if (PicFuncs.type == Pickit2) {
+            if ((PicFuncs.FirmwareVersion.major >= PicFuncs.PK2_FW_MAJ_MIN)
+                && (PicFuncs.FirmwareVersion.minor >= PicFuncs.PK2_FW_MNR_MIN)
+                && (PicFuncs.FirmwareVersion.dot >= PicFuncs.PK2_FW_DOT_MIN))
+            {
+                return true;
+            }
+            printf("PICkit 2 found with Operating System v%d.%02d.%02d\n", PicFuncs.FirmwareVersion.major,
+                                        PicFuncs.FirmwareVersion.minor, PicFuncs.FirmwareVersion.dot);
+            printf("Use -D to download minimum required OS v%d.%02d.%02d or later\n", PicFuncs.PK2_FW_MAJ_MIN,
+                                        PicFuncs.PK2_FW_MNR_MIN, PicFuncs.PK2_FW_DOT_MIN);
+            fflush(stdout);
+            ReturnCode = WRONG_OS;
+        } else if (PicFuncs.type == Pickit3) {
+            if ((PicFuncs.FirmwareVersion.major >= PicFuncs.PK3_FW_MAJ_MIN)
+                && (PicFuncs.FirmwareVersion.minor >= PicFuncs.PK3_FW_MNR_MIN)
+                && (PicFuncs.FirmwareVersion.dot >= PicFuncs.PK3_FW_DOT_MIN))
+            {
+                return true;
+            }
+            printf("PICkit 3 found with Operating System v%d.%02d.%02d\n", PicFuncs.FirmwareVersion.major,
+                                        PicFuncs.FirmwareVersion.minor, PicFuncs.FirmwareVersion.dot);
+            printf("Use -D to download minimum required OS v%d.%02d.%02d or later\n", PicFuncs.PK3_FW_MAJ_MIN,
+                                        PicFuncs.PK3_FW_MNR_MIN, PicFuncs.PK3_FW_DOT_MIN);
+            fflush(stdout);
+            ReturnCode = WRONG_OS;
+        }
 	}
 	else
 	{

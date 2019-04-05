@@ -1640,7 +1640,7 @@ bool CPICkitFunctions::ReadDevice(char function, bool progmem, bool eemem, bool 
         if ((DevFile.PartsList[ActivePart].UserIDWords * bytesPerWord) > MAX_BYTES)
         {
             UploadDataNoLen();
-            ArrayCopy(Usb_read_array, 0, upload_buffer, MAX_BYTES, MAX_BYTES);                
+            ArrayCopy(Usb_read_array, 0, upload_buffer, MAX_BYTES, MAX_BYTES);
         }
         RunScript(SCR_PROG_EXIT, 1);
         do
@@ -2319,19 +2319,30 @@ bool CPICkitFunctions::SetVDDVoltage(float voltage, float threshold)
                         // and too low prevents VPP pump from working.
     }
     unsigned short int ccpValue = (unsigned short int)(voltage * 32 + 10.5);
-	ccpValue <<= 6;
+    ccpValue <<= 6;
     unsigned char vFault = (unsigned char)(((threshold * voltage) / 5) * 255);
     if (vFault > 210)
     {
         vFault = 210; // ~4.12v maximum.  Because of diode droop, limit threshold on high side.
     }
-    
+
     unsigned char commandArray[BUF_SIZE];
     commandArray[0] = FWCMD_SETVDD;
-    commandArray[1] = (unsigned char) (ccpValue & 0xFF);
-    commandArray[2] = (unsigned char) (ccpValue / 256);
-    commandArray[3] = vFault;
-    return writeUSB(commandArray, 4);
+    if (m_Driver.type() == Pickit2) {
+        commandArray[1] = (unsigned char) (ccpValue & 0xFF);
+        commandArray[2] = (unsigned char) (ccpValue / 256);
+        commandArray[3] = vFault;
+        return writeUSB(commandArray, 4);
+    } else if (m_Driver.type() == Pickit3) {
+        //TODO change firmware to handle more accurate voltage steps
+        unsigned short int vddValue = (ushort)(voltage / 0.125F);
+
+        commandArray[1] = (byte)(vddValue & 0xFF);
+        commandArray[2] = (byte)(vddValue / 256);
+
+        return writeUSB(commandArray, 3);
+    }
+    return false;
 }
 
 bool CPICkitFunctions::SetVppVoltage(float voltage, float threshold)
@@ -2342,10 +2353,18 @@ bool CPICkitFunctions::SetVppVoltage(float voltage, float threshold)
 
     unsigned char commandArray[BUF_SIZE];
     commandArray[0] = FWCMD_SETVPP;
-    commandArray[1] = ccpValue;
-    commandArray[2] = vppADC;
-    commandArray[3] = vFault;
-    return writeUSB(commandArray, 4);
+    if (m_Driver.type() == Pickit2) {
+        commandArray[1] = ccpValue;
+        commandArray[2] = vppADC;
+        commandArray[3] = vFault;
+        return writeUSB(commandArray, 4);
+    } else if (m_Driver.type() == Pickit3) {
+        unsigned short int vppValue = (unsigned short int)(voltage / 0.125F);
+        commandArray[1] = (unsigned char)(vppValue & 0xFF);
+        commandArray[2] = (unsigned char)(vppValue / 256);
+        return writeUSB(commandArray, 3);
+    }
+    return false;
 }
         
 void CPICkitFunctions::ResetBuffers(void)
@@ -2414,11 +2433,18 @@ bool CPICkitFunctions::ReadPICkitVoltages(float* vdd, float* vpp)
     {
         if (readUSB())
         {
-            float valueADC = (float)((Usb_read_array[1] * 256) + Usb_read_array[0]);
-            *vdd = (valueADC / 65536) * 5.0F;
-            valueADC = (float)((Usb_read_array[3] * 256) + Usb_read_array[2]);
-            *vpp = (valueADC / 65536) * 13.7F;
-            return true;
+            if (m_Driver.type() == Pickit2) {
+                float valueADC = (float)((Usb_read_array[1] * 256) + Usb_read_array[0]);
+                *vdd = (valueADC / 65536) * 5.0F;
+                valueADC = (float)((Usb_read_array[3] * 256) + Usb_read_array[2]);
+                *vpp = (valueADC / 65536) * 13.7F;
+                return true;
+            } else if (m_Driver.type() == Pickit3) {
+                //TODO if firmware is changed to handle more accurate voltage steps, change this too
+                *vpp = (float)((Usb_read_array[0] * 256) + Usb_read_array[1]) * 0.125f;
+                *vdd = (float)((Usb_read_array[2] * 256) + Usb_read_array[3]) * 0.125f;
+                return true;
+            }
         }
     }
     return false;
@@ -2428,7 +2454,7 @@ bool CPICkitFunctions::DetectPICkit2Device(int unitNumber, bool readFWVer)
 {
 	bool result = false;
 	unsigned char  commandArray[BUF_SIZE];
-	unsigned char  usbReadArray[BUF_SIZE];
+    unsigned char  Usb_read_array[BUF_SIZE];
 	
 	// is there a device with this index?
 	if (!m_Driver.FindTheHID(unitNumber))
@@ -2444,20 +2470,51 @@ bool CPICkitFunctions::DetectPICkit2Device(int unitNumber, bool readFWVer)
 		return true;	// found device, but don't read FW
 	}
 
-	// Try to read firmware version
-	commandArray[0] = FWCMD_FIRMWARE_VERSION;
+    type = m_Driver.type();
+    if (type == Pickit2) {
+        // Try to read firmware version
+        commandArray[0] = FWCMD_FIRMWARE_VERSION;
 
-	result = m_Driver.WriteReport((char *)commandArray, 1);
-	if (result)
-	{
-		result = m_Driver.ReadReport((char *)usbReadArray);
-		if (result)
-		{
-			FirmwareVersion.major = usbReadArray[0];
-			FirmwareVersion.minor = usbReadArray[1];
-			FirmwareVersion.dot = usbReadArray[2];
-		}
-	}
+        result = m_Driver.WriteReport((char *)commandArray, 1);
+        if (result)
+        {
+            result = m_Driver.ReadReport((char *)Usb_read_array);
+            if (result)
+            {
+                FirmwareVersion.major = Usb_read_array[0];
+                FirmwareVersion.minor = Usb_read_array[1];
+                FirmwareVersion.dot = Usb_read_array[2];
+            }
+        }
+    } else if (type == Pickit3) {
+        commandArray[0] = FWCMD_GETVERSIONS_MPLAB;
+        commandArray[1] = 0;
+        result = m_Driver.WriteReport((char *)commandArray, 2);
+        if (result)
+        {
+            result = m_Driver.ReadReport((char *)Usb_read_array);
+            if (result)
+            {
+                FirmwareVersion.major = Usb_read_array[33];
+                FirmwareVersion.minor = Usb_read_array[34];
+                FirmwareVersion.dot = Usb_read_array[35];
+
+                PK3_OSVersion.type = Usb_read_array[7];
+                PK3_OSVersion.major = Usb_read_array[8];
+                PK3_OSVersion.minor = Usb_read_array[9];
+                PK3_OSVersion.dot = Usb_read_array[10];
+
+                PK3_AppVersion.type = Usb_read_array[12];
+                PK3_AppVersion.major = Usb_read_array[12];
+                PK3_AppVersion.minor = Usb_read_array[13];
+                PK3_AppVersion.dot = Usb_read_array[14];
+
+                PK3_MagicKey = Usb_read_array[31] + (Usb_read_array[32] << 8) + (Usb_read_array[33] << 16);
+            }
+        }
+        else
+            return false;
+    }
 	return result;
 }
 

@@ -83,9 +83,10 @@ extern pickit_dev	*deviceHandle;
 
 #define	NORMAL_MODE		1
 #define	BOOTLOAD_MODE	2
+#define MPLAB_MODE      3
 
 #define	AUTOPOWER		0	// auto detect target power
-#define	PK2POWER			1	// power target from PICkit2
+#define	PK2POWER		1	// power target from PICkit2
 #define	SELFPOWER		2	// target is self-powered
 
 #define	MINFWVERSION	0x020a00
@@ -124,6 +125,12 @@ extern pickit_dev	*deviceHandle;
 #define	WR_INTERNAL_EE		0xb1
 #define	RD_INTERNAL_EE		0xb2
 
+/*
+ * PICkit3 Commands.
+ */
+#define CMD_GETVERSIONS_MPLAB      0x41     // Get firmware version
+
+
 // Script commands
 #define	BUSY_LED_OFF		0xf4
 #define	BUSY_LED_ON			0xf5
@@ -138,11 +145,17 @@ extern pickit_dev	*deviceHandle;
 #define	VDD_OFF				0xfe
 #define	VDD_ON				0xff
 
+typedef enum {
+    Pickit2,
+    Pickit3
+} PickitType_t;
+extern PickitType_t deviceType;
+
 extern bool	verbose;
 extern int	pickit_interface;
-extern int	pickit2mode;
+extern int	pickit_mode;
 extern int	usbdebug;
-extern int	pickit2firmware;
+extern int	pickit_firmware;
 extern int	targetPower;
 extern FILE	*usbFile;
 extern byte	cmd[reqLen + 1];
@@ -150,24 +163,23 @@ extern byte	cmd[reqLen + 1];
 class CUsbhidioc //: public CDialog
 {
 public:
-	CUsbhidioc(void);
-	char *GetPK2UnitID(void);
+    CUsbhidioc(void);
+    PickitType_t type() {return m_type;}
+    char *GetPK2UnitID(void);
     bool FindTheHID(int unitIndex);
     bool ReadReport (char *);
     bool WriteReport(char *, unsigned int);
-    void CloseReport ();
+    void CloseReport();
 
 protected:
-//    void GetDeviceCapabilities();
-//    void PrepareForOverlappedTransfer();
-
-		char m_UnitID[32];
+    char m_UnitID[32];
+    PickitType_t m_type = Pickit2;
 };
 
 struct scriptInterpreter {
-	byte	scriptcode;	// opcode in script buffer
-	byte	args;			// number of arguments (255 = variable, first arg is count, 254 = script #, then count)
-	char	*name;		// mnemonic for script
+    byte	scriptcode;	// opcode in script buffer
+    byte	args;			// number of arguments (255 = variable, first arg is count, 254 = script #, then count)
+    char	*name;		// mnemonic for script
 };
 
 extern struct scriptInterpreter scriptInterpreter[];

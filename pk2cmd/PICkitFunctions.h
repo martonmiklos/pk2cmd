@@ -1,5 +1,5 @@
 #pragma once
-#include "usbhidioc.h"
+#include "pk2usb.h"
 #include "DeviceFile.h"
 #include "DeviceData.h"
 
@@ -165,13 +165,17 @@ class CPICkitFunctions
 		  // Constants
 		  static const int BUF_SIZE    = 65;
 		  static const int MAX_BYTES   = 64;
-		  static const unsigned char FW_MAJ_MIN = 2;
-		  static const unsigned char FW_MNR_MIN = 32;
-		  static const unsigned char FW_DOT_MIN = 0;
+          static const unsigned char PK2_FW_MAJ_MIN = 2;
+          static const unsigned char PK2_FW_MNR_MIN = 32;
+          static const unsigned char PK2_FW_DOT_MIN = 0;
+          static const unsigned char PK3_FW_MAJ_MIN = 2;
+          static const unsigned char PK3_FW_MNR_MIN = 0;
+          static const unsigned char PK3_FW_DOT_MIN = 5;
 		  static const unsigned char BitReverseTable[256];
 
 		  enum FWCommands
 			 {
+             FWCMD_GETVERSIONS_MPLAB          = 0x41,
 			 FWCMD_ENTER_BOOTLOADER           = 0x42,
 			 FWCMD_NO_OPERATION               = 0x5A,
 			 FWCMD_FIRMWARE_VERSION           = 0x76,
@@ -337,6 +341,22 @@ class CPICkitFunctions
 			  unsigned char major;
 			  unsigned char minor;
 			  unsigned char dot; } FirmwareVersion;
+
+        struct PK3OSver {
+              unsigned char type; // FIXME it might be an enum?
+              unsigned char major;
+              unsigned char minor;
+              unsigned char dot; } PK3_OSVersion;
+
+        struct PK3APver {
+              unsigned char type; // FIXME it might be an enum?
+              unsigned char major;
+              unsigned char minor;
+              unsigned char dot; } PK3_AppVersion;
+
+        int PK3_MagicKey;
+        bool PK3_MPLAB_Mode = false;
+        PickitType_t type;
 
 		struct RdErr {
 			  _TCHAR memoryType[16];

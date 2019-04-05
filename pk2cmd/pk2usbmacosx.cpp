@@ -418,7 +418,7 @@ int sendUSB(pickit_dev *d, byte *src, int len)
 	bool	rescan = false;
 	char	buf[REPORT_SIZE + 1];
 
-	if (pickit2mode == NORMAL_MODE)
+	if (pickit_mode == NORMAL_MODE)
 	{
 		if ((src[0] == ENTERBOOTLOADER) && (src[1] == END_OF_BFR))
 			rescan = true;
@@ -531,7 +531,7 @@ pickit_dev *usbPickitOpen(int unit, char *id)
 
 /* The following should be handled by the higher level code
 
-	if (pickit2mode == NORMAL_MODE)
+	if (pickit_mode == NORMAL_MODE)
 	{
 		if (pickit2firmware < MINFWVERSION)
 		{

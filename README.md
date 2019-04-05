@@ -1,6 +1,9 @@
 pk2cmd
 ======
 
+Command line porgramming tool for Pickit2 and Pickit3 with scripting firmware
+
+
 Notice
 ------
 
@@ -18,6 +21,8 @@ Code in this repository is from:
 *   `PICkit2_PK2CMD_WIN32_SourceV1-21_RC1.zip` as published by Microchip
     (only changes to the non-Windows-specific files from the basis
     archive)
+*   Pickit3 support was implemented according to the 
+    PICkit3 Programmer Application Source v3.10
 
 With the exception of inconsequential formatting and filesystem changes,
 the contents of this repository consist only of the code listed above.

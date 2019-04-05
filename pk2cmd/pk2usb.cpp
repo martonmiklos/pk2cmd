@@ -47,12 +47,14 @@
 
 // Data
 
+PickitType_t deviceType = Pickit2;
 usb_dev_handle	*deviceHandle = NULL;
 
 // PICkit USB values
 
 const static int pickit_vendorID = 0x04d8;	// Microchip, Inc
-const static int pickit_productID = 0x0033;	// PICkit 2 FLASH starter kit
+const static int pickit2_productID = 0x0033;	// PICkit 2 FLASH starter kit
+const static int pickit3_productID = 0x900a;	// PICkit 3
 
 const static int pickit_endpoint_out = 1;		// endpoint 1 address for OUT
 const static int pickit_endpoint_in = 0x81;	// endpoint 0x81 address for IN
@@ -67,7 +69,7 @@ int sendUSB(pickit_dev *d, byte *src, int len)
 	int	r, i;
 	bool	rescan = false;
 
-	if (pickit2mode == NORMAL_MODE)
+    if (pickit_mode == NORMAL_MODE)
 	{
 		if ((src[0] == ENTERBOOTLOADER) && (src[1] == END_OF_BFR))
 			rescan = true;
@@ -205,8 +207,8 @@ pickit_dev *usbPickitOpen(int unitIndex, char *unitID)
 	struct usb_device	*usb_devices;
 	struct usb_bus		*bus;
 	usb_dev_handle		*d = NULL;
-	char					unitIDSerial[64];
-	byte					retData[reqLen + 1];
+    char                unitIDSerial[64];
+    byte				retData[reqLen + 1];
 
 #ifdef LINUX
 	int					retval;
@@ -228,8 +230,9 @@ pickit_dev *usbPickitOpen(int unitIndex, char *unitID)
 
 	if (verbose)
 	{
-		printf("\nLocating USB Microchip PICkit2 (vendor 0x%04x/product 0x%04x)\n",
-			pickit_vendorID, pickit_productID);
+        printf("\nLocating USB Microchip PICkit2/3 (0x%04x:0x%04x/0x%04x:0x%04x)\n",
+            pickit_vendorID, pickit2_productID,
+            pickit_vendorID, pickit3_productID);
 		fflush(stdout);
 	}
 
@@ -259,13 +262,15 @@ pickit_dev *usbPickitOpen(int unitIndex, char *unitID)
 		for (device = usb_devices; device != NULL; device = device->next)
 		{
 			if (device->descriptor.idVendor == pickit_vendorID
-				&&device->descriptor.idProduct == pickit_productID)
+                && (device->descriptor.idProduct == pickit2_productID
+                    || device->descriptor.idProduct == pickit3_productID))
 			{
 				if (unitIndex == unitNumber)
 				{
 					if (verbose)
 					{
-						printf( "Found USB PICkit as device '%s' on USB bus %s\n",
+                        printf( "Found PICkit%d as device '%s' on USB bus %s\n",
+                            device->descriptor.idProduct == pickit2_productID ? 2 : 3,
 							device->filename,
 							device->bus->dirname);
 						fflush(stdout);
@@ -274,7 +279,7 @@ pickit_dev *usbPickitOpen(int unitIndex, char *unitID)
 					unitID[0] = '-';
 					unitID[1] = 0;
 
-					d = usb_open(device);
+                    d = usb_open(device);
 					deviceHandle = d;
 
 					if (device->descriptor.iSerialNumber > 0)
@@ -337,36 +342,72 @@ pickit_dev *usbPickitOpen(int unitIndex, char *unitID)
 							return NULL;
 						}
 	#endif
-						cmd[0] = GETVERSION;
-						sendPickitCmd(d, cmd, 1);
-						recvUSB(d, 8, retData);
 
-						if (retData[5] == 'B')
-						{
-							if (verbose)
-							{
-								printf("Communication established. PICkit2 bootloader firmware version is %d.%d\n\n",
-									(int) retData[6], (int) retData[7]);
-								fflush(stdout);
-							}
+                        if (device->descriptor.idProduct == pickit2_productID)
+                        {
+                            deviceType = Pickit2;
+                            cmd[0] = GETVERSION;
+                            sendPickitCmd(deviceHandle, cmd, 1);
+                            recvUSB(deviceHandle, 8, retData);
 
-							pickit2mode = BOOTLOAD_MODE;
-							pickit2firmware = (((int) retData[6]) << 8) | (((int) retData[7]) & 0xff);
-						}
-						else
-						{
-							if (verbose)
-							{
-								printf("Communication established. PICkit2 firmware version is %d.%d.%d\n\n",
-									(int) retData[0], (int) retData[1], (int) retData[2]);
-								fflush(stdout);
-							}
+                            if (retData[5] == 'B')
+                            {
+                                if (verbose)
+                                {
+                                    printf("Communication established. PICkit2 bootloader firmware version is %d.%d\n\n",
+                                        (int) retData[6], (int) retData[7]);
+                                    fflush(stdout);
+                                }
 
-							pickit2mode = NORMAL_MODE;
-							pickit2firmware = (((int) retData[0]) << 16) | ((((int) retData[1]) << 8) & 0xff00) | (((int) retData[2]) & 0xff);
-						}
+                                pickit_mode = BOOTLOAD_MODE;
+                                pickit_firmware = (((int) retData[6]) << 8) | (((int) retData[7]) & 0xff);
+                            }
+                            else
+                            {
+                                if (verbose)
+                                {
+                                    printf("Communication established. PICkit2 firmware version is %d.%d.%d\n",
+                                        (int) retData[0], (int) retData[1], (int) retData[2]);
+                                    fflush(stdout);
+                                }
 
-						return d;
+                                pickit_mode = NORMAL_MODE;
+                                pickit_firmware = (((int) retData[0]) << 16) | ((((int) retData[1]) << 8) & 0xff00) | (((int) retData[2]) & 0xff);
+                            }
+                        }
+                        else
+                        {
+                            deviceType = Pickit3;
+                            cmd[0] = CMD_GETVERSIONS_MPLAB;
+                            cmd[1] = 0;
+                            sendPickitCmd(deviceHandle, cmd, 2);
+                            recvUSB(deviceHandle, 64, retData);
+
+                            if (retData[30] != 'P' ||
+                                retData[31] != 'k' ||
+                                retData[32] != '3')
+                            {
+                                printf("Incompatible PICkit3 firmware detected\n");
+                                printf("Please, upgrade the firmware using PICkit 3 Scripting Tool.\n");
+                                fflush(stdout);
+                                usb_close(deviceHandle);
+                                return NULL;
+                            }
+                            else
+                            {
+                                if (verbose)
+                                {
+                                    printf("Communication established. PICkit3 scripting firmware version is %d.%d.%d\n",
+                                        (int) retData[33], (int) retData[34], (int) retData[35]);
+                                    fflush(stdout);
+                                }
+
+                                pickit_mode = NORMAL_MODE;
+                                pickit_firmware = (((int) retData[33]) << 16) | ((((int) retData[34]) << 8) & 0xff00) | (((int) retData[35]) & 0xff);
+                            }
+                        }
+
+                        return d;
 					}
 					else 
 					{
@@ -390,12 +431,11 @@ pickit_dev *usbPickitOpen(int unitIndex, char *unitID)
 
 	if (verbose)
 	{
-		printf("Could not find PICkit2 programmer--\n"
+        printf("Could not find any PICkit2/PICkit3 (with scripting mode firmware) programmer--\n"
 			"you might try lsusb to see if it's actually there.\n");
 		fflush(stdout);
 	}
-
-	return NULL;
+    return deviceHandle;
 }
 
 #endif	// #ifndef	WIN32

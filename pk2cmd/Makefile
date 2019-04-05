@@ -16,9 +16,9 @@
 APP=pk2cmd
 CC=g++
 # Uncomment this for debugging with gdb
-#DBG=-ggdb -O0
+DBG=-ggdb -O0 -DVERBOSE
 # Uncomment this for no debugging (default)
-DBG=-O2
+#DBG=-O2
 OPTS=-Wall -D_GNU_SOURCE $(DBG)
 OBJS=cmd_app.o DeviceData.o DeviceFile.o ImportExportHex.o PICkitFunctions.o PIC32PE.o Pk2BootLoader.o pk2cmd.o stdafx.o pk2usbcommon.o pk2usb.o P24F_PE.o dsP33_PE.o strnatcmp.o
 
