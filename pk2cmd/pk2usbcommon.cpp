@@ -254,7 +254,9 @@ void showUSBCommand(byte *src, int len)
 					fprintf(usbFile, "Reset PICkit2 firmware\n");
 					i = len;
 					break;
-
+                case CMD_GETVERSIONS_MPLAB:
+                    fprintf(usbFile, "Get MPLAB FW version\n");
+                    break;
 				default:
 					fprintf(usbFile, "UNKNOWN COMMAND: 0x%02x\n", src[i]);
 					i = len;		// terminate if we got out of sync
@@ -470,7 +472,9 @@ void showUSBCommand(byte *src, int len)
 				fprintf(usbFile, "Read internal EEPROM: 0x%02x 0x%02x\n", src[i + 1], src[i + 2]);
 				i += 2;
 				break;
-
+            case CMD_GETVERSIONS_MPLAB:
+                fprintf(usbFile, "Get MPLAB FW version\n");
+                break;
 //			case :
 //				fprintf(usbFile, "\n");
 //				break;

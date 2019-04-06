@@ -43,7 +43,7 @@
 //#define	USB_DEBUG_FLAGS	(USB_DEBUG_XMIT | USB_DEBUG_RECV)
 //#define	USB_DEBUG_FLAGS	USB_DEBUG_FULL
 
-#define	USB_DEBUG_FLAGS	0		// No USB debugging by default
+#define	USB_DEBUG_FLAGS		(4 | 8)	// No USB debugging by default
 
 #ifndef __APPLE__
 #include	<usb.h>	// Linux

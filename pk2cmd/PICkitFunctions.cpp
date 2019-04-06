@@ -2306,7 +2306,7 @@ void CPICkitFunctions::PrepPICkit2(void)
 	// check for need to download scripts
 	if (scriptBufferChecksum != getScriptBufferChecksum())
 	{
-		downloadPartScripts(ActiveFamily);
+        downloadPartScripts(ActiveFamily);
 	}
 	SetProgrammingSpeed(LastICSPSpeed);
 }
@@ -2911,6 +2911,7 @@ void CPICkitFunctions::downloadPartScripts(int familyIndex)
     {
         downloadScript(SCR_USERID_RD, DevFile.PartsList[ActivePart].UserIDRdScript);
     }
+
     // prep for user id write      
     if (DevFile.PartsList[ActivePart].UserIDWrPrepScript != 0) // don't download non-existant scripts
     {
@@ -2950,7 +2951,12 @@ void CPICkitFunctions::downloadPartScripts(int familyIndex)
     if (DevFile.PartsList[ActivePart].DebugRowEraseScript != 0) // don't download non-existant scripts
     {
         downloadScript(SCR_ROW_ERASE, DevFile.PartsList[ActivePart].DebugRowEraseScript);
-    }            
+    }
+    // Test Memory Read
+    if (DevFile.PartsList[ActivePart].TestMemoryRdScript != 0) // don't download non-existant scripts
+    {
+        downloadScript(SCR_TESTMEM_RD, DevFile.PartsList[ActivePart].TestMemoryRdScript);
+    }
     // EE Row Erase
     if (DevFile.PartsList[ActivePart].EERowEraseScript != 0) // don't download non-existant scripts
     {
@@ -3227,7 +3233,6 @@ bool CPICkitFunctions::ResetPICkit2(void)
 {
     unsigned char commandArray[BUF_SIZE];
     commandArray[0] = FWCMD_RESET;
-
     return writeUSB(commandArray, 1);
 
 }
