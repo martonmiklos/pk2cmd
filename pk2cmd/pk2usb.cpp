@@ -380,7 +380,16 @@ pickit_dev *usbPickitOpen(int unitIndex, char *unitID)
                             deviceType = Pickit3;
                             cmd[0] = CMD_GETVERSIONS_MPLAB;
                             cmd[1] = 0;
-                            sendPickitCmd(deviceHandle, cmd, 2);
+
+                            memset(cmd, 0xAD, 64);
+                            cmd[0] = CMD_GETVERSIONS_MPLAB;
+                            cmd[1] = 0;
+
+                            cmd[60] = 2;
+                            cmd[61] = 0;
+                            cmd[62] = 0;
+                            cmd[63] = 0;
+                            sendPickitCmd(deviceHandle, cmd, 64);
                             recvUSB(deviceHandle, 64, retData);
 
                             if (retData[30] != 'P' ||

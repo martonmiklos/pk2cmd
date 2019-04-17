@@ -488,8 +488,7 @@ void showUSBCommand(byte *src, int len)
 	fflush(usbFile);
 }
 
-// Send a command to the PICkit2
-
+// Send a command to the PICkit2/3
 void sendPickitCmd(pickit_dev *d, byte *src, int len)
 {
 	int	i;
@@ -502,7 +501,7 @@ void sendPickitCmd(pickit_dev *d, byte *src, int len)
 
 	while (i < reqLen)
 	{
-		cmd[i] = 'Z';
+        cmd[i] = 'Z';
 		i++;
 	}
 

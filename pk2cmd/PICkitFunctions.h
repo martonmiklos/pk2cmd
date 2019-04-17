@@ -354,9 +354,8 @@ class CPICkitFunctions
               unsigned char minor;
               unsigned char dot; } PK3_AppVersion;
 
-        int PK3_MagicKey;
         bool PK3_MPLAB_Mode = false;
-        PickitType_t type;
+        PickitType_t type() const;
 
 		struct RdErr {
 			  _TCHAR memoryType[16];

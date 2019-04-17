@@ -163,9 +163,10 @@ void Ccmd_app::PK2_CMD_Entry(int argc, _TCHAR* argv[])
 
 void Ccmd_app::ResetAtExit(void)
 {
-	if (resetOnExit)
+    // Pickit3 needs reset on exit otherwise it stuck on next open
+    if (resetOnExit || PicFuncs.type() == Pickit3)
 	{
-		printf("Resetting PICkit 2...\n");
+        printf("Resetting PICkit device...\n");
 		fflush(stdout);
 		PicFuncs.ResetPICkit2(); // must re-enumerate with new UnitID in serial string
 	}
@@ -2176,7 +2177,7 @@ bool Ccmd_app::findPICkit2(int unitIndex)
 {
 	if (PicFuncs.DetectPICkit2Device(unitIndex, true))
 	{
-        if (PicFuncs.type == Pickit2) {
+        if (PicFuncs.type() == Pickit2) {
             if ((PicFuncs.FirmwareVersion.major >= PicFuncs.PK2_FW_MAJ_MIN)
                 && (PicFuncs.FirmwareVersion.minor >= PicFuncs.PK2_FW_MNR_MIN)
                 && (PicFuncs.FirmwareVersion.dot >= PicFuncs.PK2_FW_DOT_MIN))
@@ -2189,7 +2190,7 @@ bool Ccmd_app::findPICkit2(int unitIndex)
                                         PicFuncs.PK2_FW_MNR_MIN, PicFuncs.PK2_FW_DOT_MIN);
             fflush(stdout);
             ReturnCode = WRONG_OS;
-        } else if (PicFuncs.type == Pickit3) {
+        } else if (PicFuncs.type() == Pickit3) {
             if ((PicFuncs.FirmwareVersion.major >= PicFuncs.PK3_FW_MAJ_MIN)
                 && (PicFuncs.FirmwareVersion.minor >= PicFuncs.PK3_FW_MNR_MIN)
                 && (PicFuncs.FirmwareVersion.dot >= PicFuncs.PK3_FW_DOT_MIN))

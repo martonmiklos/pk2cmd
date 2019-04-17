@@ -164,7 +164,7 @@ class CUsbhidioc //: public CDialog
 {
 public:
     CUsbhidioc(void);
-    PickitType_t type() {return m_type;}
+    PickitType_t type() const {return m_type;}
     char *GetPK2UnitID(void);
     bool FindTheHID(int unitIndex);
     bool ReadReport (char *);

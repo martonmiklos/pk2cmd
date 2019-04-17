@@ -2470,8 +2470,7 @@ bool CPICkitFunctions::DetectPICkit2Device(int unitNumber, bool readFWVer)
 		return true;	// found device, but don't read FW
 	}
 
-    type = m_Driver.type();
-    if (type == Pickit2) {
+    if (m_Driver.type() == Pickit2) {
         // Try to read firmware version
         commandArray[0] = FWCMD_FIRMWARE_VERSION;
 
@@ -2486,10 +2485,17 @@ bool CPICkitFunctions::DetectPICkit2Device(int unitNumber, bool readFWVer)
                 FirmwareVersion.dot = Usb_read_array[2];
             }
         }
-    } else if (type == Pickit3) {
+    } else if (m_Driver.type() == Pickit3) {
+        memset(commandArray, 0xAD, 64);
         commandArray[0] = FWCMD_GETVERSIONS_MPLAB;
         commandArray[1] = 0;
-        result = m_Driver.WriteReport((char *)commandArray, 2);
+
+        // Embed the length as expected from an MPLAB host
+        commandArray[60] = 2;
+        commandArray[61] = 0;
+        commandArray[62] = 0;
+        commandArray[63] = 0;
+        result = m_Driver.WriteReport((char *)commandArray, 64);
         if (result)
         {
             result = m_Driver.ReadReport((char *)Usb_read_array);
@@ -2508,8 +2514,6 @@ bool CPICkitFunctions::DetectPICkit2Device(int unitNumber, bool readFWVer)
                 PK3_AppVersion.major = Usb_read_array[12];
                 PK3_AppVersion.minor = Usb_read_array[13];
                 PK3_AppVersion.dot = Usb_read_array[14];
-
-                PK3_MagicKey = Usb_read_array[31] + (Usb_read_array[32] << 8) + (Usb_read_array[33] << 16);
             }
         }
         else
@@ -5349,7 +5353,12 @@ void CPICkitFunctions::CRC33_Calculate(unsigned char ByteValue , unsigned int* C
 
             value = (unsigned char)((*CRC_Value >> (8)) ^ ByteValue);
             *CRC_Value = P33PE.CRC_LUT_Array[value] ^ (*CRC_Value << 8);
-        }
+}
+
+PickitType_t CPICkitFunctions::type() const
+{
+    return  m_Driver.type();
+}
 
 bool CPICkitFunctions::useProgExec33(void)
         {
