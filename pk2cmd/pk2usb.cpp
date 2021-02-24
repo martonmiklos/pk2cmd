@@ -207,8 +207,8 @@ pickit_dev *usbPickitOpen(int unitIndex, char *unitID)
 	struct usb_device	*usb_devices;
 	struct usb_bus		*bus;
 	usb_dev_handle		*d = NULL;
-    char                unitIDSerial[64];
-    byte				retData[reqLen + 1];
+    char                unitIDSerial[64] = {0};
+    byte				retData[reqLen + 1] = {0};
 
 #ifdef LINUX
 	int					retval;

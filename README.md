@@ -1,7 +1,7 @@
 pk2cmd
 ======
 
-Command line porgramming tool for Pickit2 and Pickit3 with scripting firmware
+Cross platform, command line programming tool for Pickit2 and Pickit3 with scripting firmware
 
 
 Notice

@@ -41,7 +41,7 @@ Ccmd_app::Ccmd_app(void)
 	usingLowVoltageErase = false;
 	resetOnExit = false;
 	Pk2Operation = true;
-	pk2UnitIndex = 0;		
+	pk2UnitIndex = 0;
 	ReturnCode = OPSUCCESS;
 }
 
@@ -163,10 +163,10 @@ void Ccmd_app::PK2_CMD_Entry(int argc, _TCHAR* argv[])
 
 void Ccmd_app::ResetAtExit(void)
 {
-    // Pickit3 needs reset on exit otherwise it stuck on next open
-    if (resetOnExit || PicFuncs.type() == Pickit3)
+	// Pickit3 needs reset on exit otherwise it stuck on next open
+	if (resetOnExit || PicFuncs.type() == Pickit3)
 	{
-        printf("Resetting PICkit device...\n");
+		printf("Resetting PICkit device...\n");
 		fflush(stdout);
 		PicFuncs.ResetPICkit2(); // must re-enumerate with new UnitID in serial string
 	}
@@ -222,7 +222,7 @@ bool Ccmd_app::Pk2OperationCheck(int argc, _TCHAR* argv[])
 
 				case 'P':
 				case 'p':
-					//if ((argv[i][2]) == 0) 
+					//if ((argv[i][2]) == 0)
 					//	ret = true; // auto detect
 					//if ((((argv[i][2]) == 'F') || ((argv[i][2]) == 'f')) && ((argv[i][3]) != 0))
 					//	ret = true; // family detect
@@ -307,7 +307,7 @@ void Ccmd_app::processArgs(int argc, _TCHAR* argv[])
 	string2Upper(tempString, MAX_PATH);
 
 	// auto detect?
-	if (tempString[0] == 0) 
+	if (tempString[0] == 0)
 	{ // no argument, full autodetect
 		if (detectAllFamilies(argc, argv))
 		{ // found a device
@@ -387,20 +387,20 @@ bool Ccmd_app::detectAllFamilies(int argc, _TCHAR* argv[])
 	// on auto detect, must run these args first
 	if (!priority1Args(argc, argv, true))
 		return false;
-    for (int searchIndex = 0; searchIndex < PicFuncs.DevFile.Info.NumberFamilies ; searchIndex++)
-    {
+	for (int searchIndex = 0; searchIndex < PicFuncs.DevFile.Info.NumberFamilies ; searchIndex++)
+	{
 		for (int searchPriority = 0; searchPriority < PicFuncs.DevFile.Info.NumberFamilies; searchPriority++)
 		{
 			if ((PicFuncs.DevFile.Families[searchPriority].PartDetect) && (PicFuncs.DevFile.Families[searchPriority].SearchPriority == searchIndex))
 			{
-				if (PicFuncs.SearchDevice(searchPriority))   
+				if (PicFuncs.SearchDevice(searchPriority))
 				{
 					return true;
 				}
 			}
 		}
-    }
-    return false; // no supported part found in any family
+	}
+	return false; // no supported part found in any family
 }
 
 void Ccmd_app::printFamilies(void)
@@ -408,8 +408,8 @@ void Ccmd_app::printFamilies(void)
 	printf("\nAuto-Detectable Part Families:\n\n");
 	printf("     ID#  Family\n");
 	int familyID = 0;
-    for (int index = 0; index < PicFuncs.DevFile.Info.NumberFamilies ; index++)
-    {
+	for (int index = 0; index < PicFuncs.DevFile.Info.NumberFamilies ; index++)
+	{
 		for (int order = 0; order < PicFuncs.DevFile.Info.NumberFamilies; order++)
 		{
 			if ((PicFuncs.DevFile.Families[order].FamilyType == index) && PicFuncs.DevFile.Families[order].PartDetect)
@@ -417,7 +417,7 @@ void Ccmd_app::printFamilies(void)
 				printf("     %2i   %s\n", familyID++, PicFuncs.DevFile.Families[order].FamilyName);
 			}
 		}
-    }
+	}
 	fflush(stdout);
 }
 
@@ -437,15 +437,15 @@ bool Ccmd_app::detectSpecificFamily(_TCHAR* idString, int argc, _TCHAR* argv[])
 		return false;
 
 	int idNumber = 0;
-    for (int index = 0; index < PicFuncs.DevFile.Info.NumberFamilies ; index++)
-    {
+	for (int index = 0; index < PicFuncs.DevFile.Info.NumberFamilies ; index++)
+	{
 		for (int order = 0; order < PicFuncs.DevFile.Info.NumberFamilies; order++)
 		{
 			if ((PicFuncs.DevFile.Families[order].FamilyType == index) && PicFuncs.DevFile.Families[order].PartDetect)
 			{
 				if (idNumber++ == familyID)
 				{
-					if (PicFuncs.SearchDevice(order))   
+					if (PicFuncs.SearchDevice(order))
 					{
 						return true;
 					}
@@ -455,7 +455,7 @@ bool Ccmd_app::detectSpecificFamily(_TCHAR* idString, int argc, _TCHAR* argv[])
 				}
 			}
 		}
-    }
+	}
 	printf("-PF Illegal family ID value.\n");
 	fflush(stdout);
 	ReturnCode = INVALID_CMDLINE_ARG;
@@ -644,7 +644,7 @@ bool Ccmd_app::selectUnitArg(int argc, _TCHAR* argv[])
 						fflush(stdout);
 						break;
 					}
-				}				
+				}
 				return false;
 			}
 			else
@@ -667,7 +667,7 @@ bool Ccmd_app::selectUnitArg(int argc, _TCHAR* argv[])
 						//{
 						//	ret = PicFuncs.UnitIDRead(readString);
 						//}
-							
+
 						pUnitID = PicFuncs.GetUnitID();
 						_tcsncpy_s(readString, pUnitID, _tcslen(pUnitID));
 
@@ -682,7 +682,7 @@ bool Ccmd_app::selectUnitArg(int argc, _TCHAR* argv[])
 						if (_tcsncmp(readString, "PIC18F2550", 10) == 0)
 						{
 							if (listFWVer)
-								len = printf("%d          -", j); 
+								len = printf("%d          -", j);
 							else
 								len = printf("%d          <bootloader>", j);
 						}
@@ -696,7 +696,7 @@ bool Ccmd_app::selectUnitArg(int argc, _TCHAR* argv[])
 							printf(" ");
 							len++;
 						}
-						
+
 						if (listFWVer)
 						{
 							if (PicFuncs.FirmwareVersion.major == 'v')
@@ -705,7 +705,7 @@ bool Ccmd_app::selectUnitArg(int argc, _TCHAR* argv[])
 								printf("%d.%02d.%02d",
 									PicFuncs.FirmwareVersion.major,
 									PicFuncs.FirmwareVersion.minor,
-									PicFuncs.FirmwareVersion.dot); 
+									PicFuncs.FirmwareVersion.dot);
 						}
 
 						printf("\n");
@@ -780,7 +780,7 @@ bool Ccmd_app::priority1Args(int argc, _TCHAR* argv[], bool preserveArgs)
 						tempf = (float)_tstof(&argv[i][2]);
 						if (tempf > PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].VddMax)
 						{
-							printf("-A Vdd setpoint exceeds maximum for this device of %.1fV\n", 
+							printf("-A Vdd setpoint exceeds maximum for this device of %.1fV\n",
 									PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].VddMax);
 							ret = false;
 							ReturnCode = INVALID_CMDLINE_ARG;
@@ -939,7 +939,7 @@ bool Ccmd_app::priority1Args(int argc, _TCHAR* argv[], bool preserveArgs)
 							ReturnCode = INVALID_CMDLINE_ARG;
 							fflush(stdout);
 						}
-						PicFuncs.SetVppFirstEnable(true);	
+						PicFuncs.SetVppFirstEnable(true);
 							argv[i] = (char *) "";
 					}
 					break;
@@ -970,7 +970,7 @@ bool Ccmd_app::priority1Args(int argc, _TCHAR* argv[], bool preserveArgs)
 			if (!ret)
 				break;	// stop on first error.
 		}
-	}	
+	}
 	if (PicFuncs.GetSelfPowered() && PicFuncs.GetVppFirstEnable())
 	{
 		printf("-W -X VPP first not supported with external power\n");
@@ -1029,7 +1029,7 @@ bool Ccmd_app::checkArgsForBlankCheck(int argc, _TCHAR* argv[])
 					break;
 			}
 		}
-	}	
+	}
 
 	return !(blankCheck && contradication);
 }
@@ -1051,7 +1051,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 	struct tm today;
 	_tzset();
 	time(&now);
-    _localtime64_s(&today, &now);
+	_localtime64_s(&today, &now);
 	_tcsftime( stime, 128, "%d-%b-%Y, %H:%M:%S", &today );
 
 
@@ -1152,7 +1152,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 				ReturnCode = INVALID_CMDLINE_ARG;
 				ret = false;
 			}
-			else if (PicFuncs.FamilyIsEEPROM() 
+			else if (PicFuncs.FamilyIsEEPROM()
 				&& (PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigMasks[PROTOCOL_CFG] != MICROWIRE_BUS)
 				&& (PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigMasks[PROTOCOL_CFG] != UNIO_BUS))
 			{ // Microwire / UNIO have a true "chip erase".  Other devices must write every byte blank.
@@ -1175,7 +1175,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 
 	for (i = 1; i < argc; i++)
 	{
-		// -M Program 
+		// -M Program
 		if ((checkSwitch(argv[i])) && ((argv[i][1] == 'M') || (argv[i][1] == 'm')) && ret)
 		{
 			if (hexLoaded)
@@ -1183,7 +1183,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 				bool noProgEntryForVerify = false;
 				bool verify = true;
 				bool argError = true;
-								
+
 				if (argv[i][2] == 0)
 				{ // no specified region - erase then program all
 					if (PicFuncs.FamilyIsEEPROM())
@@ -1298,7 +1298,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 								// check for devices with config in program memory - can't program seperately.
 								if (PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigWords > 0)
 								{
-									    int configLocation = (int)PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigAddr /
+										int configLocation = (int)PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigAddr /
 																PicFuncs.DevFile.Families[PicFuncs.ActiveFamily].ProgMemHexBytes;
 										int configWords = PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigWords;
 										if ((configLocation < (int)PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ProgramMem) && (configWords > 0))
@@ -1353,7 +1353,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 						else
 							ret = PicFuncs.ReadDevice(VERIFY_MEM_SHORT, program, eedata, userid, config);
 					}
-                    printf("PICkit Program Report\n");
+					printf("PICkit Program Report\n");
 					printf("%s\n", stime);
 					printf("Device Type: %s\n\n", PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].PartName);
 					if (ret)
@@ -1453,7 +1453,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 									}
 									else
 										config = true;
-								}	
+								}
 								else
 									ret = false;
 								break;
@@ -1500,7 +1500,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 
 	for (i = 1; i < argc; i++)
 	{
-		// -G Read 
+		// -G Read
 		if ((checkSwitch(argv[i])) && ((argv[i][1] == 'G') || (argv[i][1] == 'g')) && ret)
 		{
 			int startAddr = 0;
@@ -1665,7 +1665,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 						if (PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigWords > 0)
 						{
 
-						    int configLocation = (int)PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigAddr /
+							int configLocation = (int)PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigAddr /
 													PicFuncs.DevFile.Families[PicFuncs.ActiveFamily].ProgMemHexBytes;
 							int configWords = PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigWords;
 							if ((configLocation < (int)PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ProgramMem) && (configWords > 0))
@@ -1702,7 +1702,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 						unsigned int vector = PicFuncs.ReadVector();
 						printf("%8X\n", vector);
 						fflush(stdout);
-					    break;
+						break;
 						}
 
 					default:
@@ -1719,7 +1719,7 @@ bool Ccmd_app::priority2Args(int argc, _TCHAR* argv[])
 				}
 			}
 		}
-	}	
+	}
 
 	return ret;
 }
@@ -1803,7 +1803,7 @@ bool Ccmd_app::priority3Args(int argc, _TCHAR* argv[])
 			if (!ret)
 				break;	// stop on first error.
 		}
-	}	
+	}
 	return ret;
 }
 
@@ -1854,7 +1854,7 @@ bool Ccmd_app::priority4Args(int argc, _TCHAR* argv[])
 			if (!ret)
 				break;	// stop on first error.
 		}
-	}	
+	}
 	return ret;
 }
 
@@ -1919,7 +1919,7 @@ bool Ccmd_app::delayArg(int argc, _TCHAR* argv[])
 								PicFuncs.DelaySeconds(seconds);
 							}
 						}
-						else 
+						else
 						{ // bad value
 							printf("-H Invalid value.\n");
 							fflush(stdout);
@@ -1935,7 +1935,7 @@ bool Ccmd_app::delayArg(int argc, _TCHAR* argv[])
 			if (!ret)
 				break;	// stop on first error.
 		}
-	}	
+	}
 	return ret;
 }
 
@@ -2067,10 +2067,10 @@ void Ccmd_app::printConfiguration(void)
 		do
 		{ // data columns loop
 			if (PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].BandGapMask == 0)
-				printf("%04X  ", (PicFuncs.DeviceBuffers->ConfigWords[startWord] 
+				printf("%04X  ", (PicFuncs.DeviceBuffers->ConfigWords[startWord]
 								& PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigMasks[startWord]));
 			else
-				printf("%04X  ", (PicFuncs.DeviceBuffers->ConfigWords[startWord] 
+				printf("%04X  ", (PicFuncs.DeviceBuffers->ConfigWords[startWord]
 								& PicFuncs.DevFile.PartsList[PicFuncs.ActivePart].ConfigMasks[startWord])
 								| PicFuncs.DeviceBuffers->BandGap);
 			startWord++;
@@ -2104,7 +2104,7 @@ bool Ccmd_app::getRange(int* start, int* stop, _TCHAR* str_range)
 		 // unexpected end of string
 			return false;
 		else
-			temps[i] = *(str_range + i);			
+			temps[i] = *(str_range + i);
 	}
 
 	if ((i >= 9) || ( i == 0))
@@ -2123,12 +2123,12 @@ bool Ccmd_app::getRange(int* start, int* stop, _TCHAR* str_range)
 			break;
 		}
 		else
-			temps[j] = *(str_range + i + j);			
+			temps[j] = *(str_range + i + j);
 	}
 
 	if ((j >= 9) || (j ==0))
 	// more than 8 character address or no address
-		return false;	
+		return false;
 
 	*stop = ImportExportFuncs.ParseHex(temps, j++);
 	if (*start <= *stop)
@@ -2156,7 +2156,7 @@ bool Ccmd_app::getValue(unsigned int* value, _TCHAR* str_value)
 			break;
 		}
 		else
-			temps[i] = *(str_value + i);			
+			temps[i] = *(str_value + i);
 	}
 
 	if ((i >= 9) || ( i == 0))
@@ -2177,33 +2177,33 @@ bool Ccmd_app::findPICkit2(int unitIndex)
 {
 	if (PicFuncs.DetectPICkit2Device(unitIndex, true))
 	{
-        if (PicFuncs.type() == Pickit2) {
-            if ((PicFuncs.FirmwareVersion.major >= PicFuncs.PK2_FW_MAJ_MIN)
-                && (PicFuncs.FirmwareVersion.minor >= PicFuncs.PK2_FW_MNR_MIN)
-                && (PicFuncs.FirmwareVersion.dot >= PicFuncs.PK2_FW_DOT_MIN))
-            {
-                return true;
-            }
-            printf("PICkit 2 found with Operating System v%d.%02d.%02d\n", PicFuncs.FirmwareVersion.major,
-                                        PicFuncs.FirmwareVersion.minor, PicFuncs.FirmwareVersion.dot);
-            printf("Use -D to download minimum required OS v%d.%02d.%02d or later\n", PicFuncs.PK2_FW_MAJ_MIN,
-                                        PicFuncs.PK2_FW_MNR_MIN, PicFuncs.PK2_FW_DOT_MIN);
-            fflush(stdout);
-            ReturnCode = WRONG_OS;
-        } else if (PicFuncs.type() == Pickit3) {
-            if ((PicFuncs.FirmwareVersion.major >= PicFuncs.PK3_FW_MAJ_MIN)
-                && (PicFuncs.FirmwareVersion.minor >= PicFuncs.PK3_FW_MNR_MIN)
-                && (PicFuncs.FirmwareVersion.dot >= PicFuncs.PK3_FW_DOT_MIN))
-            {
-                return true;
-            }
-            printf("PICkit 3 found with Operating System v%d.%02d.%02d\n", PicFuncs.FirmwareVersion.major,
-                                        PicFuncs.FirmwareVersion.minor, PicFuncs.FirmwareVersion.dot);
-            printf("Use -D to download minimum required OS v%d.%02d.%02d or later\n", PicFuncs.PK3_FW_MAJ_MIN,
-                                        PicFuncs.PK3_FW_MNR_MIN, PicFuncs.PK3_FW_DOT_MIN);
-            fflush(stdout);
-            ReturnCode = WRONG_OS;
-        }
+		if (PicFuncs.type() == Pickit2) {
+			if ((PicFuncs.FirmwareVersion.major >= PicFuncs.PK2_FW_MAJ_MIN)
+				&& (PicFuncs.FirmwareVersion.minor >= PicFuncs.PK2_FW_MNR_MIN)
+				&& (PicFuncs.FirmwareVersion.dot >= PicFuncs.PK2_FW_DOT_MIN))
+			{
+				return true;
+			}
+			printf("PICkit 2 found with Operating System v%d.%02d.%02d\n", PicFuncs.FirmwareVersion.major,
+										PicFuncs.FirmwareVersion.minor, PicFuncs.FirmwareVersion.dot);
+			printf("Use -D to download minimum required OS v%d.%02d.%02d or later\n", PicFuncs.PK2_FW_MAJ_MIN,
+										PicFuncs.PK2_FW_MNR_MIN, PicFuncs.PK2_FW_DOT_MIN);
+			fflush(stdout);
+			ReturnCode = WRONG_OS;
+		} else if (PicFuncs.type() == Pickit3) {
+			if ((PicFuncs.FirmwareVersion.major >= PicFuncs.PK3_FW_MAJ_MIN)
+				&& (PicFuncs.FirmwareVersion.minor >= PicFuncs.PK3_FW_MNR_MIN)
+				&& (PicFuncs.FirmwareVersion.dot >= PicFuncs.PK3_FW_DOT_MIN))
+			{
+				return true;
+			}
+			printf("PICkit 3 found with Operating System v%d.%02d.%02d\n", PicFuncs.FirmwareVersion.major,
+										PicFuncs.FirmwareVersion.minor, PicFuncs.FirmwareVersion.dot);
+			printf("Use -D to download minimum required OS v%d.%02d.%02d or later\n", PicFuncs.PK3_FW_MAJ_MIN,
+										PicFuncs.PK3_FW_MNR_MIN, PicFuncs.PK3_FW_DOT_MIN);
+			fflush(stdout);
+			ReturnCode = WRONG_OS;
+		}
 	}
 	else
 	{
@@ -2229,7 +2229,7 @@ bool Ccmd_app::checkDevFilePathOptionB(int argc, _TCHAR* argv[], _TCHAR* path_st
 	_TCHAR path_temp[MAX_PATH];
 
 	int i;
-	// look for 'B' option. 
+	// look for 'B' option.
 	for (i = 0; i < argc; i++)
 	{
 		if (checkSwitch(argv[i]))
@@ -2283,7 +2283,7 @@ bool Ccmd_app::checkHelp1(int argc, _TCHAR* argv[])
 		if (_tcschr(argv[i], '?'))
 			break;
 	}
-	
+
 	if (i == argc) // none found
 		return false;
 
@@ -2556,7 +2556,7 @@ bool Ccmd_app::checkHelp1(int argc, _TCHAR* argv[])
 				printf("      recommended use.  Example: -pPIC16F887\n");
 				printf("  2 : -PF<id>\n");
 				printf("      Auto-Detect a target part connected to PICkit 2 within a given family.\n");
-                printf("      Use '-pf' for a list of auto-detectable families and their family ID\n");
+				printf("      Use '-pf' for a list of auto-detectable families and their family ID\n");
 				printf("      number.  Not all part families support detection.  No programming \n");
 				printf("      operations are performed when -PF is used without an ID parameter.\n");
 				printf("      Use '-pf<id>' to auto-detect a part within a given family using\n");
@@ -2568,10 +2568,10 @@ bool Ccmd_app::checkHelp1(int argc, _TCHAR* argv[])
 				printf("The -V and -X options may NOT be used with any form of auto-detect.\n");
 				printf("During auto-detect, VDD is ALWAYS 3.0 Volts unless -W is used.  After a part\n");
 				printf("is detected, the device VDD default or -A voltage is used for remaining\n");
-                printf("operations.\n");
+				printf("operations.\n");
 				printf("\n");
 				printf("Auto-detecting can be slower than explicitly specifying the part name.\n");
-                printf("\n");
+				printf("\n");
 				printf("WARNING: SOME DEVICE FAMILIES USE A VPP VOLTAGE OF 12 VOLTS ON THE MCLR\n");
 				printf("PIN.  THIS VOLTAGE MAY DAMAGE DEVICES FROM OTHER FAMILIES.  NEVER USE\n");
 				printf("AN AUTODETECT OPTION ON A TARGET WITHOUT A KNOWN GOOD PROGRAMMING\n");
@@ -2753,130 +2753,130 @@ void Ccmd_app::displayHelp(void)
 	printf("                        PICkit 2 COMMAND LINE HELP\n");
 	printf("Options              Description                              Default\n");
 	printf("----------------------------------------------------------------------------\n");
-    printf("A<value>             Set Vdd voltage                          Device Specific\n");
+	printf("A<value>             Set Vdd voltage                          Device Specific\n");
 	printf("B<path>              Specify the path to PK2DeviceFile.dat    Searches PATH\n");
 	printf("                                                              and calling dir\n");
-    printf("C                    Blank Check Device                       No Blank Check\n");
-    printf("D<file>              OS Download                              None\n");
-    printf("E                    Erase Flash Device                       Do Not Erase\n");
-    printf("F<file>              Hex File Selection                       None\n");
-    printf("G<Type><range/path>  Read functions                           None\n");
-    printf("                     Type F: = read into hex file,\n");
-    printf("                             path = full file path,\n");
-    printf("                             range is not used\n");
-    printf("                     Types P,E,I,C: = ouput read of Program,\n");
-    printf("                             EEPROM, ID and/or Configuration\n");
-    printf("                             Memory to the screen. P and E\n");
-    printf("                             must be followed by an address\n");
-    printf("                             range in the form of x-y where\n");
-    printf("                             x is the start address and y is\n");
-    printf("                             the end address both in hex,\n");
-    printf("                             path is not used\n");
-    printf("                             (Serial EEPROM memory is 'P')\n");
-    printf("H<value>             Delay before Exit                        Exit immediately\n");
-    printf("                         K = Wait on keypress before exit\n");
-    printf("                         1 to 9 = Wait <value> seconds\n");
-    printf("                                  before exit\n");
-    printf("I                    Display Device ID & silicon revision     Do Not Display\n");
+	printf("C                    Blank Check Device                       No Blank Check\n");
+	printf("D<file>              OS Download                              None\n");
+	printf("E                    Erase Flash Device                       Do Not Erase\n");
+	printf("F<file>              Hex File Selection                       None\n");
+	printf("G<Type><range/path>  Read functions                           None\n");
+	printf("                     Type F: = read into hex file,\n");
+	printf("                             path = full file path,\n");
+	printf("                             range is not used\n");
+	printf("                     Types P,E,I,C: = ouput read of Program,\n");
+	printf("                             EEPROM, ID and/or Configuration\n");
+	printf("                             Memory to the screen. P and E\n");
+	printf("                             must be followed by an address\n");
+	printf("                             range in the form of x-y where\n");
+	printf("                             x is the start address and y is\n");
+	printf("                             the end address both in hex,\n");
+	printf("                             path is not used\n");
+	printf("                             (Serial EEPROM memory is 'P')\n");
+	printf("H<value>             Delay before Exit                        Exit immediately\n");
+	printf("                         K = Wait on keypress before exit\n");
+	printf("                         1 to 9 = Wait <value> seconds\n");
+	printf("                                  before exit\n");
+	printf("I                    Display Device ID & silicon revision     Do Not Display\n");
 	printf("J<newlines>          Display operation percent complete       Rotating slash\n");
 	printf("                         N = Each update on newline\n");
-    printf("K                    Display Hex File Checksum                Do Not Display\n");
-    printf("L<rate>              Set programming speed                    Fastest\n");
-    printf("                     <rate> is a value of 1-16, with 1 being\n");
+	printf("K                    Display Hex File Checksum                Do Not Display\n");
+	printf("L<rate>              Set programming speed                    Fastest\n");
+	printf("                     <rate> is a value of 1-16, with 1 being\n");
 	printf("                     the fastest.\n");
-    printf("M<memory region>     Program Device                           Do Not Program\n");
-    printf("                     memory regions:\n");
-    printf("                         P = Program memory\n");
-    printf("                         E = EEPROM\n");
-    printf("                         I = ID memory\n");
-    printf("                         C = Configuration memory\n");
-    printf("                         If no region is entered, the entire\n");
-    printf("                         device will be erased & programmed.\n");
-    printf("                         If a region is entered, no erase\n");
-    printf("                         is performed and only the given\n");
-    printf("                         region is programmed.\n");
-    printf("                         All programmed regions are verified.\n");
-    printf("			            (serial EEPROM memory is 'P')\n");
-    printf("N<string>            Assign Unit ID string to first found     None\n");
-    printf("                     PICkit 2 unit.  String is limited to 14\n");
-    printf("                     characters maximum.  May not be used\n");
-    printf("                     with other options.\n");
-    printf("                     Example: -NLab1B\n");
-    printf("P<part>              Part Selection. Example: -PPIC16f887     (Required)\n");
+	printf("M<memory region>     Program Device                           Do Not Program\n");
+	printf("                     memory regions:\n");
+	printf("                         P = Program memory\n");
+	printf("                         E = EEPROM\n");
+	printf("                         I = ID memory\n");
+	printf("                         C = Configuration memory\n");
+	printf("                         If no region is entered, the entire\n");
+	printf("                         device will be erased & programmed.\n");
+	printf("                         If a region is entered, no erase\n");
+	printf("                         is performed and only the given\n");
+	printf("                         region is programmed.\n");
+	printf("                         All programmed regions are verified.\n");
+	printf("			            (serial EEPROM memory is 'P')\n");
+	printf("N<string>            Assign Unit ID string to first found     None\n");
+	printf("                     PICkit 2 unit.  String is limited to 14\n");
+	printf("                     characters maximum.  May not be used\n");
+	printf("                     with other options.\n");
+	printf("                     Example: -NLab1B\n");
+	printf("P<part>              Part Selection. Example: -PPIC16f887     (Required)\n");
 	printf("P                    Auto-Detect in all detectable families\n");
 	printf("PF                   List auto-detectable part families\n");
 	printf("PF<id>               Auto-Detect only within the given part\n");
 	printf("                     family, using the ID listed with -PF\n");
 	printf("                     Example: -PF2\n");
 	printf("Q                    Disable PE for PIC24/dsPIC33 devices     Use PE\n");
-    printf("R                    Release /MCLR after operations           Assert /MCLR\n");
-    printf("S<string/#>          Use the PICkit 2 with the given Unit ID  First found unit\n");
-    printf("                     string.  Useful when multiple PICkit 2\n");
-    printf("                     units are connected.\n");
-    printf("                     Example: -SLab1B\n");
-    printf("                     If no <string> is entered, then the\n");
-    printf("                     Unit IDs of all connected units will be\n");
-    printf("                     displayed.  In this case, all other \n");
-    printf("                     options are ignored. -S# will list units\n");
+	printf("R                    Release /MCLR after operations           Assert /MCLR\n");
+	printf("S<string/#>          Use the PICkit 2 with the given Unit ID  First found unit\n");
+	printf("                     string.  Useful when multiple PICkit 2\n");
+	printf("                     units are connected.\n");
+	printf("                     Example: -SLab1B\n");
+	printf("                     If no <string> is entered, then the\n");
+	printf("                     Unit IDs of all connected units will be\n");
+	printf("                     displayed.  In this case, all other \n");
+	printf("                     options are ignored. -S# will list units\n");
 	printf("                     with their firmware versions.\n");
 	printf("                     See help -s? for more info.\n");
-    printf("T                    Power Target after operations            Vdd off\n");
-    printf("U<value>             Program OSCCAL memory, where:            Do Not Program\n");
-    printf("                      <value> is a hexadecimal number\n");
-    printf("                      representing the OSCCAL value to be\n");
-    printf("                      programmed. This may only be used in\n");
-    printf("                      conjunction with a programming \n");
-    printf("                      operation.\n");
-    printf("V<value>             Vpp override                             Device Specific\n");
-    printf("W                    Externally power target                  Power from Pk2\n");
+	printf("T                    Power Target after operations            Vdd off\n");
+	printf("U<value>             Program OSCCAL memory, where:            Do Not Program\n");
+	printf("                      <value> is a hexadecimal number\n");
+	printf("                      representing the OSCCAL value to be\n");
+	printf("                      programmed. This may only be used in\n");
+	printf("                      conjunction with a programming \n");
+	printf("                      operation.\n");
+	printf("V<value>             Vpp override                             Device Specific\n");
+	printf("W                    Externally power target                  Power from Pk2\n");
 	printf("X                    Use VPP first Program Entry Method       VDD first\n");
-    printf("Y<memory region>     Verify Device                            Do Not Verify\n");
-    printf("                         P = Program memory\n");
-    printf("                         E = EEPROM\n");
-    printf("                         I = ID memory\n");
-    printf("                         C = Configuration memory\n");
-    printf("                         If no region is entered, the entire\n");
-    printf("                         device will be verified.\n");
-    printf("                         (Serial EEPROM memory is 'P')\n");
-    printf("Z                    Preserve EEData on Program               Do Not Preserve\n");
-    printf("?                    Help Screen                              Not Shown\n");
-    printf("\n");
-    printf("     Each option must be immediately preceeded by a switch, Which can\n");
-    printf("     be either a dash <-> or a slash </> and options must be separated\n");
-    printf("     by a single space.\n");
-    printf("\n");
-    printf("     Example:   PK2CMD /PPIC16F887 /Fc:\\mycode /M\n");
-    printf("                               or\n");
-    printf("                PK2CMD -PPIC16F887 -Fc:\\mycode -M\n");
-    printf("\n");
-    printf("     Any option immediately followed by a question mark will invoke\n");
-    printf("     a more detailed description of how to use that option.\n");
-    printf("\n");
-    printf("     Commands and their parameters are not case sensitive. Commands will\n");
-    printf("     be processed according to command order of precedence, not the order\n");
-    printf("     in which they appear on the command line. \n");
-    printf("	Precedence:\n");
-    printf("                -?      (first)\n");
+	printf("Y<memory region>     Verify Device                            Do Not Verify\n");
+	printf("                         P = Program memory\n");
+	printf("                         E = EEPROM\n");
+	printf("                         I = ID memory\n");
+	printf("                         C = Configuration memory\n");
+	printf("                         If no region is entered, the entire\n");
+	printf("                         device will be verified.\n");
+	printf("                         (Serial EEPROM memory is 'P')\n");
+	printf("Z                    Preserve EEData on Program               Do Not Preserve\n");
+	printf("?                    Help Screen                              Not Shown\n");
+	printf("\n");
+	printf("     Each option must be immediately preceeded by a switch, Which can\n");
+	printf("     be either a dash <-> or a slash </> and options must be separated\n");
+	printf("     by a single space.\n");
+	printf("\n");
+	printf("     Example:   PK2CMD /PPIC16F887 /Fc:\\mycode /M\n");
+	printf("                               or\n");
+	printf("                PK2CMD -PPIC16F887 -Fc:\\mycode -M\n");
+	printf("\n");
+	printf("     Any option immediately followed by a question mark will invoke\n");
+	printf("     a more detailed description of how to use that option.\n");
+	printf("\n");
+	printf("     Commands and their parameters are not case sensitive. Commands will\n");
+	printf("     be processed according to command order of precedence, not the order\n");
+	printf("     in which they appear on the command line. \n");
+	printf("	Precedence:\n");
+	printf("                -?      (first)\n");
 	printf("                -B\n");
 	printf("                -S\n");
-    printf("                -D\n");
+	printf("                -D\n");
 	printf("                -N\n");
-    printf("                -P\n");
-    printf("                -A -F -J -L -Q -V -W -X -Z\n");
-    printf("                -C\n");
-    printf("                -U\n");
-    printf("                -E\n");
-    printf("                -M\n");
-    printf("                -Y\n");
-    printf("                -G\n");
-    printf("                -I -K\n");
-    printf("                -R -T\n");
-    printf("                -H      (last)\n");
-    printf("		\n");
-    printf("     The program will return an exit code upon completion which will\n");
-    printf("     indicate either successful completion, or describe the reason for\n");
-    printf("     failure. To view the list of exit codes and their descriptions,\n");
-    printf("     type -?E on the command line.\n");
+	printf("                -P\n");
+	printf("                -A -F -J -L -Q -V -W -X -Z\n");
+	printf("                -C\n");
+	printf("                -U\n");
+	printf("                -E\n");
+	printf("                -M\n");
+	printf("                -Y\n");
+	printf("                -G\n");
+	printf("                -I -K\n");
+	printf("                -R -T\n");
+	printf("                -H      (last)\n");
+	printf("		\n");
+	printf("     The program will return an exit code upon completion which will\n");
+	printf("     indicate either successful completion, or describe the reason for\n");
+	printf("     failure. To view the list of exit codes and their descriptions,\n");
+	printf("     type -?E on the command line.\n");
 	printf("\n");
 	printf("     type -?V on the command line for version information.\n");
 	printf("\n");
@@ -2901,7 +2901,7 @@ bool Ccmd_app::checkHelp2(int argc, _TCHAR* argv[], bool loadDeviceFileFailed)
 		if (_tcschr(argv[i], '?'))
 			break;
 	}
-	
+
 	if (i == argc) // none found
 		return false;
 
@@ -2915,7 +2915,7 @@ bool Ccmd_app::checkHelp2(int argc, _TCHAR* argv[], bool loadDeviceFileFailed)
 					if ((argv[i][2] == 'v') || (argv[i][2] == 'V'))
 					{
 						printf ("\nExecutable Version:    %d.%02d.%02d", VERSION_MAJOR, VERSION_MINOR, VERSION_DOT);
-						
+
 						if (loadDeviceFileFailed)
 							printf ("\nDevice File Version:   not found\n");
 						else
@@ -2977,7 +2977,7 @@ void Ccmd_app::displayLicense(void)
 	printf("IMPORTANT: \n");
 	printf("YOU MUST ACCEPT THE TERMS AND CONDITIONS OF THIS LICENSE AGREEMENT\n");
 	printf("TO RECEIVE A LICENSE FOR THE ACCOMPANYING SOFTWARE.  TO ACCEPT THE\n");
-    printf("TERMS OF THIS LICENSE, OPEN THIS PACKAGE AND PROCEED WITH THE\n");
+	printf("TERMS OF THIS LICENSE, OPEN THIS PACKAGE AND PROCEED WITH THE\n");
 	printf("DOWNLOAD OR USE OF THE SOFTWARE.  IF YOU DO NOT ACCEPT THESE LICENSE\n");
 	printf("TERMS, DO NOT OPEN THIS PACKAGE, DOWNLOAD, OR USE THIS SOFTWARE.\n");
 	printf("\n");
@@ -3052,7 +3052,7 @@ void Ccmd_app::displayLicense(void)
 	printf("    independently developed, or obtained free from any obligation\n");
 	printf("    of confidentiality then the obligation of confidentiality\n");
 	printf("    under this Agreement shall not apply.\n");
- 	printf("\n");
+	printf("\n");
 	printf("4.  COPYRIGHT. The Software is protected by U.S. copyright laws\n");
 	printf("    and international copyright treaties, as well as other\n");
 	printf("    intellectual property laws and treaties.\n");
