@@ -21,8 +21,10 @@ Code in this repository is from:
 *   `PICkit2_PK2CMD_WIN32_SourceV1-21_RC1.zip` as published by Microchip
     (only changes to the non-Windows-specific files from the basis
     archive)
-*   Pickit3 support was implemented according to the 
-    PICkit3 Programmer Application Source v3.10
+*   Pickit3 support implementation is based on the 
+    [PICkit3 Programmer Application Source v3.10 ](http://ww1.microchip.com/downloads/en/DeviceDoc/PICkit3%20Programmer%20Application%20v3.10.zip)
+*   [The updated device definition file](https://github.com/martonmiklos/pk2cmd/blob/master/pk2cmd/PK2DeviceFile.dat)
+    was borrowed from [Anobium's PICkitPlus device database repository.](https://github.com/Anobium/PICKitPlus)
 
 With the exception of inconsequential formatting and filesystem changes,
 the contents of this repository consist only of the code listed above.
